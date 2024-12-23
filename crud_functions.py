@@ -56,16 +56,41 @@ def initiate_db():
     #     description(описание) - текст
     #     price(цена) - целое число (не пустой)
     db.execute('''
-    CREATE TABLE IF NOT EXISTS Products (
-    id INTEGER PRIMARY KEY,
-    title TEXT NOT NULL,
-    description TEXT,
-    price INTEGER NOT NULL,
-    file TEXT NOT NULL,
-    label TEXT NOT NULL
-    );
-    ''')
+        CREATE TABLE IF NOT EXISTS Products (
+        id INTEGER PRIMARY KEY,
+        title TEXT NOT NULL,
+        description TEXT,
+        price INTEGER NOT NULL,
+        file TEXT NOT NULL,
+        label TEXT NOT NULL
+        );
+        ''')
+    # id - целое число, первичный ключ
+    # username - текст (не пустой)
+    # email - текст (не пустой)
+    # age - целое число (не пустой)
+    # balance - целое число (не пустой)
+    db.execute('''
+        CREATE TABLE IF NOT EXISTS Users (
+        id INTEGER PRIMARY KEY,
+        username TEXT NOT NULL,
+        email TEXT NOT NULL,
+        age INTEGER NOT NULL,
+        balance INTEGER NOT NULL
+        );
+        ''')
 
+def add_user(username, email, age, balance=1000):
+    db = DataBase(DB_FILE)
+    if not is_included(username):
+        db.execute("INSERT INTO Users (username, email, age, balance) VALUES (?,?,?,?)",
+                   (username, email, age, balance))
+
+def is_included(username):
+    db = DataBase(DB_FILE)
+    db.execute("SELECT * FROM Users WHERE username=?", (username,))
+    is_user_exist = db.fetch(1)
+    return is_user_exist is not None
 
 def get_all_products():
     db = DataBase(DB_FILE)
@@ -85,9 +110,8 @@ def fill_db(catalog_product):
                    (prod['title'], prod['description'], prod['price'], prod['file'], prod['label']))
 
 
-
 initiate_db()
 fill_db(catalog_product)
-all_prod = get_all_products()
-for prod in all_prod:
-    print(f"Название: {prod['title']} | Описание: {prod['description']}  | Цена: {prod['price']} ")
+#all_prod = get_all_products()
+#for prod in all_prod:
+#    print(f"Название: {prod['title']} | Описание: {prod['description']}  | Цена: {prod['price']} ")
